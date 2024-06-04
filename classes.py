@@ -1,5 +1,8 @@
 from datetime import datetime
 from exts import db
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 class Alert(db.Model):
     __tablename__ = 'alerts'
@@ -31,9 +34,59 @@ class Alert(db.Model):
             db.session.delete(alert)
             db.session.commit()
 
-class EmailAlert(Alert):
+class EmailAlert(db.Model):
+    __tablename__ = 'email_alerts'
+    id = db.Column(db.Integer, primary_key=True)
+    alert_text = db.Column(db.Text, nullable=False)
+    message_id = db.Column(db.Integer, nullable=False)
+    user_id = db.Column(db.String(80), db.ForeignKey('users.user_id'))
+    sent = db.Column(db.Boolean, default=False)
+
+    def __init__(self, alert_text, message_id, user_id):
+        self.alert_text = alert_text
+        self.message_id = message_id
+        self.user_id = user_id
+
+    def send_email(self):
+        user = User.query.filter_by(user_id=self.user_id, user_type=2).first()
+        if not user:
+            raise ValueError("User not found or not a type 2 user.")
+
+        # Set up the SMTP server
+        smtp_server = 'smtp.example.com'
+        smtp_port = 587
+        smtp_username = 'your_username'
+        smtp_password = 'your_password'
+        sender_email = 'your_email@example.com'
+        receiver_email = user.email
+
+        # Create the email message
+        message = MIMEMultipart()
+        message['From'] = sender_email
+        message['To'] = receiver_email
+        message['Subject'] = 'Alert Notification'
+        body = self.alert_text
+        message.attach(MIMEText(body, 'plain'))
+
+        # Send the email
+        server = smtplib.SMTP(smtp_server, smtp_port)
+        server.starttls()
+        server.login(smtp_username, smtp_password)
+        server.sendmail(sender_email, receiver_email, message.as_string())
+        server.quit()
+
+        # Update the alert sent status
+        self.sent = True
+        db.session.commit()
+
+    def create(self):
+        db.session.add(self)
+        db.session.commit()
+        self.send_email()  # Send the email after creating the alert record
     def send_alert(self, message):
-        print(f"Sending email alert: {message}")
+        print(f"Sending SMS alert: {message}")
+        self.send_email()
+
 
 class SmsAlert(Alert):
     def send_alert(self, message):
@@ -42,7 +95,7 @@ class SmsAlert(Alert):
 class User(db.Model):
     __tablename__ = 'users'
     user_id = db.Column(db.String(80), primary_key=True)
-    user_type = db.Column(db.Integer, nullable=False)
+    user_type = db.Column(db.Integer, nullable=False) #type 1 for user of llm, type 2 for customer managing llm
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(120), nullable=False)
     phone_number = db.Column(db.String(20), nullable=True)

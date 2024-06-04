@@ -9,7 +9,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///prototype.db'
 api = Api(app)
 
 # Add the Message resource to the API
-api.add_resource(MessageResource, '/message')
+api.add_resource(MessageResource, '/message/<int:message_id>', '/message')
 
 if __name__ == '__main__':
     print("Available endpoints:")

@@ -11,8 +11,8 @@ parser.add_argument('sentiment_score', type=str, required=True, help="Sentiment 
 class MessageResource(Resource):
     def get(self, message_id):
         # Logic to retrieve a message
-        pass
-
+        out = Message.read(message_id)
+        return {'message': out.message_text}, 200
     def post(self):
         args = parser.parse_args()
         message = Message(**args)
