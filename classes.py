@@ -92,7 +92,7 @@ class EmailAlert(db.Model):
 class SmsAlert(Alert):
     def send_alert(self, message):
         vonage_connection = VonageConnection()
-        vonage_connection.send_message(to="16502795057", text=message)
+        vonage_connection.send_message(to="", text=message)
         print(f"Sending SMS alert: {message}")
 
 class User(db.Model):
