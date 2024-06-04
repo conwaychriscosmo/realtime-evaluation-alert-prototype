@@ -1,5 +1,5 @@
 from flask_restful import Resource, reqparse
-from classes import Message
+from classes import Message, SmsAlert
 
 parser = reqparse.RequestParser()
 parser.add_argument('agent_id', type=str, required=True, help="Agent ID cannot be blank.")
@@ -17,6 +17,10 @@ class MessageResource(Resource):
         args = parser.parse_args()
         message = Message(**args)
         message.create()
+        if message.sentiment_score == "negative":
+            alert_text = f"The following message needs to be brought in line with the high standards of our organization: {message.message_text}"
+            alert = SmsAlert(alert_text=alert_text, message_id=message.message_id, users=[message.customer_id, message.agent_id])
+            alert.send_alert(alert_text)
         return {'message': 'Message created successfully.'}, 201
 
     def put(self, message_id):

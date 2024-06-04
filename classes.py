@@ -3,6 +3,7 @@ from exts import db
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from vonage_connection import VonageConnection
 
 class Alert(db.Model):
     __tablename__ = 'alerts'
@@ -14,7 +15,7 @@ class Alert(db.Model):
     def __init__(self, alert_text, message_id, users):
         self.alert_text = alert_text
         self.message_id = message_id
-        self.users = str([user.user_id for user in users])
+        self.users = str([user for user in users])
 
     def create(self):
         db.session.add(self)
@@ -90,6 +91,8 @@ class EmailAlert(db.Model):
 
 class SmsAlert(Alert):
     def send_alert(self, message):
+        vonage_connection = VonageConnection()
+        vonage_connection.send_message(to="16502795057", text=message)
         print(f"Sending SMS alert: {message}")
 
 class User(db.Model):
