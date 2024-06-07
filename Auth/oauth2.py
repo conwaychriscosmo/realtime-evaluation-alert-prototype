@@ -12,7 +12,7 @@ from authlib.oauth2.rfc6749 import grants
 from authlib.oauth2.rfc7636 import CodeChallenge
 from classes import db, User
 from .models import OAuth2Client, OAuth2AuthorizationCode, OAuth2Token
-
+#https://github.com/authlib/example-oauth2-server/ is a helpful repo, check it out :)
 
 class AuthorizationCodeGrant(grants.AuthorizationCodeGrant):
     TOKEN_ENDPOINT_AUTH_METHODS = [
