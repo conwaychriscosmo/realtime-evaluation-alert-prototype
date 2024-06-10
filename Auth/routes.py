@@ -4,7 +4,8 @@ from flask import render_template, redirect, jsonify
 from werkzeug.security import gen_salt
 from authlib.integrations.flask_oauth2 import current_token
 from authlib.oauth2 import OAuth2Error
-from .models import db, User, OAuth2Client
+from .models import db, OAuth2Client
+from .models import TechnicalUser as User #debugging microsoft copilot a bit lazy
 from .oauth2 import authorization, require_oauth
 
 

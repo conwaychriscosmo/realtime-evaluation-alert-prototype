@@ -1,6 +1,7 @@
 import vonage
+from config import config
 class VonageConnection:
-    def __init__(self, key=config.VONAGE_KEY, secret=config.VONAGE_SECRET):
+    def __init__(self, key=config['VONAGE_KEY'], secret=config['VONAGE_SECRET']):
         self.client = vonage.Client(key=key, secret=secret)
         self.sender = "15635260736"
         self.sms = vonage.Sms(self.client)

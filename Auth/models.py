@@ -13,7 +13,15 @@ from datetime import datetime
 db = SQLAlchemy()
 Base = declarative_base()
 
-class TechnicalUser(Base):
+class OAuth2Client(db.Model, OAuth2ClientMixin):
+    __tablename__ = 'oauth2_client'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(
+        db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'))
+    user = db.relationship('User')
+
+class TechnicalUser(OAuth2Client):
     """
     Represents a technical user (SDK consumer) in the system.
 
@@ -39,6 +47,8 @@ class TechnicalUser(Base):
     last_activity = Column(DateTime, default=datetime.utcnow)
     active = Column(Boolean, default=True)
     rate_limit = Column(Integer, default=100)
+    client_id = db.Column(db.Integer, db.ForeignKey("oauth2_client.id", ondelete="CASCADE"))
+    client = db.relationship("oauth2_client")
 
     @validates('permissions')
     def validate_permissions(self, key, value):
@@ -110,13 +120,6 @@ class TechnicalUser(Base):
         """
         pass
 
-class OAuth2Client(db.Model, TechnicalUser, OAuth2ClientMixin):
-    __tablename__ = 'oauth2_client'
-
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(
-        db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'))
-    user = db.relationship('User')
 
 
 class OAuth2AuthorizationCode(db.Model, OAuth2AuthorizationCodeMixin):
