@@ -6,7 +6,8 @@
 # You may obtain a copy of the License at
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
-#
+#https://googleapis.github.io/google-api-python-client/docs/dyn/gmail_v1.html
+#https://developers.google.com/gmail/api/quickstart/python
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
